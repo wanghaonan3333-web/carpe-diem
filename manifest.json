@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "schema_version": 1,
   "files": [
-    "SKILL.md"
+    "SKILL.md",
+    "references/methodology.md",
+    "references/state-schema.md",
+    "references/safety-boundaries.md",
+    "references/stages/discover.md",
+    "references/stages/validate.md",
+    "references/stages/plan.md",
+    "references/stages/track.md",
+    "scripts/carpe_diem.py"
   ]
 }

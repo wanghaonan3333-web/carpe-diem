@@ -27,6 +27,16 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Apache License", license_text)
         self.assertIn("Version 2.0", license_text)
 
+    def test_readme_offers_english_and_chinese_descriptions(self):
+        english = (ROOT / "README.md").read_text(encoding="utf-8")
+        chinese_path = ROOT / "README.zh-CN.md"
+        self.assertTrue(chinese_path.is_file())
+        chinese = chinese_path.read_text(encoding="utf-8")
+        self.assertIn("[简体中文](README.zh-CN.md)", english)
+        self.assertIn("[English](README.md)", chinese)
+        self.assertIn("An open-source Agent Skill", english)
+        self.assertIn("开源 Agent Skill", chinese)
+
     def test_skill_entrypoint_has_discoverable_frontmatter(self):
         text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
         self.assertTrue(text.startswith("---\n"))

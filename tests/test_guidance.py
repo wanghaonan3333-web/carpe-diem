@@ -19,6 +19,20 @@ REQUIRED_SECTIONS = (
 
 
 class GuidanceContractTests(unittest.TestCase):
+    def test_golden_examples_cover_core_good_and_bad_guidance_patterns(self):
+        positive = ROOT / "tests" / "fixtures" / "guidance-positive.md"
+        negative = ROOT / "tests" / "fixtures" / "guidance-negative.md"
+        self.assertTrue(positive.is_file())
+        self.assertTrue(negative.is_file())
+        positive_text = positive.read_text(encoding="utf-8")
+        negative_text = negative.read_text(encoding="utf-8")
+        for marker in ("先给判断", "单一决定", "打断后回主线", "证据化推荐"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, positive_text)
+        for marker in ("连续盘问", "随机点子列表", "无证据原创声明", "Track 越界开发"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, negative_text)
+
     def test_every_stage_exposes_the_complete_guidance_contract(self):
         for stage in STAGES:
             text = (ROOT / "references" / "stages" / f"{stage}.md").read_text(

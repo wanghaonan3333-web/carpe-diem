@@ -1,0 +1,37 @@
+name: Feature request
+description: 提议一个有真实场景和验证方式的改进
+title: "[Idea]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 用户问题
+      description: 谁在什么情境下卡住？请避免只描述功能。
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 证据或真实案例
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议变化
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 如何验证它变好了
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: 边界确认
+      options:
+        - label: 该建议不要求 Carpe Diem 自带模型或代替开发 Agent 编写业务代码。
+          required: true

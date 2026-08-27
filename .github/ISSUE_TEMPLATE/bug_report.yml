@@ -1,0 +1,32 @@
+name: Bug report
+description: 报告可复现的行为、状态、安装或安全问题
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: 请勿附上真实个人画像、密钥或未经脱敏的本地路径。
+  - type: dropdown
+    id: host
+    attributes:
+      label: 宿主 Agent
+      options: [Codex, Claude Code, Cursor, OpenClaw, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: 实际发生了什么
+      description: 包含最小复现步骤和已脱敏输出。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 你期望发生什么
+    validations:
+      required: true
+  - type: textarea
+    id: safety
+    attributes:
+      label: 是否涉及越界读取、写入、记忆或删除风险

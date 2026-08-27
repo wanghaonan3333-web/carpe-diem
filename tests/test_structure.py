@@ -8,6 +8,25 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SkillStructureTests(unittest.TestCase):
+    def test_open_source_repository_scaffold_is_complete(self):
+        required = (
+            "README.md",
+            "LICENSE",
+            "CONTRIBUTING.md",
+            "CODE_OF_CONDUCT.md",
+            ".github/ISSUE_TEMPLATE/bug_report.yml",
+            ".github/ISSUE_TEMPLATE/feature_request.yml",
+            ".github/workflows/ci.yml",
+            "docs/internal-testing.md",
+        )
+        for relative_path in required:
+            with self.subTest(resource=relative_path):
+                self.assertTrue((ROOT / relative_path).is_file())
+
+        license_text = (ROOT / "LICENSE").read_text(encoding="utf-8")
+        self.assertIn("Apache License", license_text)
+        self.assertIn("Version 2.0", license_text)
+
     def test_skill_entrypoint_has_discoverable_frontmatter(self):
         text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
         self.assertTrue(text.startswith("---\n"))
@@ -26,7 +45,12 @@ class SkillStructureTests(unittest.TestCase):
     def test_manifest_tracks_every_runtime_resource(self):
         manifest = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
         required = {
+            "manifest.json",
             "SKILL.md",
+            "adapters/codex/INSTALL.md",
+            "adapters/claude-code/INSTALL.md",
+            "adapters/cursor/INSTALL.md",
+            "adapters/openclaw/INSTALL.md",
             "references/methodology.md",
             "references/state-schema.md",
             "references/safety-boundaries.md",

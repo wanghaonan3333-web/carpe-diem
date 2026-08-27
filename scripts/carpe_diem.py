@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -447,6 +448,91 @@ def command_plan_diff(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_git(root: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", "-C", str(root), *arguments],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+
+def command_evidence_git(args: argparse.Namespace) -> int:
+    root = Path(args.root)
+    inside = run_git(root, "rev-parse", "--is-inside-work-tree")
+    if inside.returncode != 0 or inside.stdout.strip() != "true":
+        print("target is not a Git worktree", file=sys.stderr)
+        return 2
+
+    head_result = run_git(root, "rev-parse", "--verify", "HEAD")
+    head = head_result.stdout.strip() if head_result.returncode == 0 else None
+    branch_result = run_git(root, "symbolic-ref", "--quiet", "--short", "HEAD")
+    branch = branch_result.stdout.strip() if branch_result.returncode == 0 else None
+    status_result = run_git(root, "status", "--porcelain=v1", "--untracked-files=all")
+    if status_result.returncode != 0:
+        print(status_result.stderr.strip() or "git status failed", file=sys.stderr)
+        return 2
+    status_lines = [line for line in status_result.stdout.splitlines() if line]
+    changed_paths = []
+    for line in status_lines:
+        path = line[3:] if len(line) >= 4 else line
+        if " -> " in path:
+            path = path.split(" -> ", 1)[1]
+        changed_paths.append(path.strip('"'))
+    history_relationship = None
+    commits = []
+    committed_paths = []
+    if args.since:
+        exists = run_git(root, "cat-file", "-e", f"{args.since}^{{commit}}")
+        if exists.returncode != 0:
+            history_relationship = "missing"
+        elif head is None:
+            history_relationship = "no-head"
+        else:
+            ancestor = run_git(root, "merge-base", "--is-ancestor", args.since, head)
+            history_relationship = "ancestor" if ancestor.returncode == 0 else "diverged"
+            if history_relationship == "ancestor":
+                log_result = run_git(
+                    root,
+                    "log",
+                    "--reverse",
+                    "--format=%H%x1f%s",
+                    f"{args.since}..{head}",
+                )
+                commits = [
+                    {"hash": line.split("\x1f", 1)[0], "subject": line.split("\x1f", 1)[1]}
+                    for line in log_result.stdout.splitlines()
+                    if "\x1f" in line
+                ]
+                diff_result = run_git(root, "diff", "--name-only", f"{args.since}..{head}")
+                committed_paths = [
+                    line for line in diff_result.stdout.splitlines() if line
+                ]
+    payload = {
+        "status": "ok",
+        "root": str(root),
+        "branch": branch,
+        "head": head,
+        "dirty": bool(status_lines),
+        "changed_paths": changed_paths,
+        "porcelain": status_lines,
+        "since": args.since,
+        "history_relationship": history_relationship,
+        "commits": commits,
+        "committed_paths": committed_paths,
+        "observed_at": utc_now(),
+    }
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    else:
+        print(
+            f"git=ok branch={branch or '-'} head={head or '-'} dirty={str(bool(status_lines)).lower()}"
+        )
+        for path in changed_paths:
+            print(f"change {path}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="carpe-diem")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -532,6 +618,16 @@ def build_parser() -> argparse.ArgumentParser:
     diff.add_argument("--after", required=True)
     diff.add_argument("--json", action="store_true")
     diff.set_defaults(handler=command_plan_diff)
+
+    evidence = commands.add_parser("evidence", help="Collect read-only project evidence")
+    evidence_commands = evidence.add_subparsers(dest="evidence_command", required=True)
+    git_evidence = evidence_commands.add_parser(
+        "git", help="Read Git metadata without changing the worktree"
+    )
+    git_evidence.add_argument("--root", default=".")
+    git_evidence.add_argument("--since")
+    git_evidence.add_argument("--json", action="store_true")
+    git_evidence.set_defaults(handler=command_evidence_git)
 
     return parser
 

@@ -29,6 +29,16 @@ description: 帮助手握 Coding Agent 却没有项目方向的开发者或创�
 
 任何文件写入、授权读取或 Track 证据采集前，阅读 `references/safety-boundaries.md` 并满足对应门槛。
 
+## 确定性脚本
+
+先把当前 `SKILL.md` 所在目录解析为 Skill 根目录，再直接调用已定义的子命令。不要为了发现接口而通读脚本源码，也不要先试探不存在的子命令。
+
+- 个人画像：`python3 <skill-root>/scripts/carpe_diem.py state read --json`
+- 项目续接：`python3 <skill-root>/scripts/carpe_diem.py project status --root <project-root> --json`
+- Track Git 证据：获得只读授权后运行 `python3 <skill-root>/scripts/carpe_diem.py evidence git --root <project-root> --json`
+
+`project status` 返回项目状态不存在时进入 Discover，不要因此创建状态。测试或用户明确要求隔离画像时，给 `state read` 传入获准的 `--profile` 路径；不得回退读取其他画像。
+
 ## 授权与变更
 
 - 默认只使用当前对话。读取 GitHub、本地目录、笔记、Issue 或 CI 前，说明用途、目标和只读范围并获得授权。

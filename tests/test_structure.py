@@ -91,6 +91,13 @@ class SkillStructureTests(unittest.TestCase):
                 self.assertIn(relative_path, entrypoint)
                 self.assertTrue((ROOT / relative_path).is_file())
 
+    def test_entrypoint_names_exact_read_only_resume_commands(self):
+        entrypoint = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+        for command in ("state read", "project status", "evidence git"):
+            with self.subTest(command=command):
+                self.assertIn(command, entrypoint)
+        self.assertIn("不要为了发现接口而通读脚本源码", entrypoint)
+
     def test_plan_stage_links_each_output_template(self):
         plan_stage = (ROOT / "references" / "stages" / "plan.md").read_text(
             encoding="utf-8"

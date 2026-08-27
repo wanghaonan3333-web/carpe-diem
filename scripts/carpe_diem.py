@@ -525,6 +525,18 @@ def command_evidence_git(args: argparse.Namespace) -> int:
 
     head_result = run_git(root, "rev-parse", "--verify", "HEAD")
     head = head_result.stdout.strip() if head_result.returncode == 0 else None
+    head_commit = None
+    head_paths = []
+    if head is not None:
+        head_summary_result = run_git(root, "show", "-s", "--format=%H%x1f%s", "HEAD")
+        if "\x1f" in head_summary_result.stdout:
+            commit_hash, subject = head_summary_result.stdout.strip().split("\x1f", 1)
+            head_commit = {"hash": commit_hash, "subject": subject}
+        head_paths_result = run_git(
+            root, "diff-tree", "--root", "--no-commit-id", "--name-only", "-r", "HEAD"
+        )
+        if head_paths_result.returncode == 0:
+            head_paths = [line for line in head_paths_result.stdout.splitlines() if line]
     branch_result = run_git(root, "symbolic-ref", "--quiet", "--short", "HEAD")
     branch = branch_result.stdout.strip() if branch_result.returncode == 0 else None
     status_result = run_git(root, "status", "--porcelain=v1", "--untracked-files=all")
@@ -572,6 +584,8 @@ def command_evidence_git(args: argparse.Namespace) -> int:
         "root": str(root),
         "branch": branch,
         "head": head,
+        "head_commit": head_commit,
+        "head_paths": head_paths,
         "dirty": bool(status_lines),
         "changed_paths": changed_paths,
         "porcelain": status_lines,

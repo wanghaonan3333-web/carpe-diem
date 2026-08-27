@@ -53,6 +53,8 @@ class GitEvidenceTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
             self.assertEqual(payload["head"], head)
+            self.assertEqual(payload["head_commit"]["subject"], "first")
+            self.assertEqual(payload["head_paths"], ["tracked.txt"])
             self.assertTrue(payload["dirty"])
             self.assertIn("tracked.txt", payload["changed_paths"])
             self.assertIn("untracked.txt", payload["changed_paths"])

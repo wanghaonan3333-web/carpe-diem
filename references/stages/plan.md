@@ -26,7 +26,7 @@
 6. 里程碑、任务拆分和依赖；
 7. 开源协议、贡献方式和发布路径。
 
-每章批准后记录关键决定。最终根据 `templates/project-plan.md` 和 `templates/project-handoff.md` 形成产物，并运行确定性计划验证。
+每章批准后记录关键决定。最终根据 `templates/project-plan.md` 和 `templates/project-handoff.md` 形成产物，并运行确定性计划验证；进入 Track 后使用 `templates/progress-summary.md` 保持每次跟进结构一致。
 
 ## 用户决策
 

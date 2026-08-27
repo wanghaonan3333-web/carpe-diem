@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import hashlib
 import json
 import os
+import re
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -25,6 +27,20 @@ PROFILE_LIST_FIELDS = (
     "consents",
 )
 PROJECT_PHASES = ("discover", "validate", "plan", "handoff", "track", "paused", "completed")
+REQUIRED_PLAN_SECTIONS = (
+    "摘要与问题",
+    "目标用户与核心场景",
+    "价值假设和差异化证据",
+    "目标与非目标",
+    "用户体验和功能范围",
+    "架构、组件、数据流和接口",
+    "错误处理、安全和隐私",
+    "测试和验收",
+    "里程碑、任务和依赖",
+    "风险与降级",
+    "开源、贡献和发布方式",
+    "关键决策记录",
+)
 
 
 class StateCorruptedError(Exception):
@@ -349,6 +365,88 @@ def command_project_event(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_plan_validate(args: argparse.Namespace) -> int:
+    plan_path = Path(args.file)
+    if not plan_path.is_file():
+        print("plan file does not exist", file=sys.stderr)
+        return 2
+    text = plan_path.read_text(encoding="utf-8")
+    blockers = []
+    if not re.search(r"(?m)^# 项目实施计划\s*$", text):
+        blockers.append(
+            {"code": "missing_title", "message": "use the title: # 项目实施计划"}
+        )
+    for token in sorted(set(re.findall(r"\b(?:TBD|TODO|FIXME)\b", text, re.IGNORECASE))):
+        blockers.append(
+            {"code": "placeholder", "message": f"remove unfinished placeholder: {token}"}
+        )
+    for section in REQUIRED_PLAN_SECTIONS:
+        if f"## {section}" not in text:
+            blockers.append(
+                {"code": "missing_section", "message": f"add required section: {section}"}
+            )
+            continue
+        match = re.search(
+            rf"(?ms)^## {re.escape(section)}\s*$\n(.*?)(?=^## |\Z)", text
+        )
+        if match is None or not match.group(1).strip():
+            blockers.append(
+                {"code": "empty_section", "message": f"complete required section: {section}"}
+            )
+    milestone_match = re.search(
+        r"(?ms)^## 里程碑、任务和依赖\s*$\n(.*?)(?=^## |\Z)", text
+    )
+    if milestone_match is not None and "验收标准" not in milestone_match.group(1):
+        blockers.append(
+            {
+                "code": "missing_acceptance_criteria",
+                "message": "add explicit 验收标准 to the milestone section",
+            }
+        )
+    payload = {
+        "valid": not blockers,
+        "file": str(plan_path),
+        "blockers": blockers,
+    }
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    else:
+        if blockers:
+            for blocker in blockers:
+                print(f"BLOCK {blocker['code']}: {blocker['message']}")
+        else:
+            print(f"plan=valid file={plan_path}")
+    return 0 if not blockers else 1
+
+
+def command_plan_diff(args: argparse.Namespace) -> int:
+    before = Path(args.before)
+    after = Path(args.after)
+    allowed_names = {"project-plan.md", "project-handoff.md"}
+    if before.name not in allowed_names or after.name != before.name:
+        print("plan diff only accepts matching Carpe Diem plan or handoff files", file=sys.stderr)
+        return 2
+    if not before.is_file() or not after.is_file():
+        print("both diff inputs must exist", file=sys.stderr)
+        return 2
+    before_text = before.read_text(encoding="utf-8")
+    after_text = after.read_text(encoding="utf-8")
+    diff = "".join(
+        difflib.unified_diff(
+            before_text.splitlines(keepends=True),
+            after_text.splitlines(keepends=True),
+            fromfile=str(before),
+            tofile=str(after),
+        )
+    )
+    payload = {"changed": before_text != after_text, "diff": diff}
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    else:
+        print(diff, end="")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="carpe-diem")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -417,6 +515,23 @@ def build_parser() -> argparse.ArgumentParser:
     event.add_argument("--next", required=True)
     event.add_argument("--json", action="store_true")
     event.set_defaults(handler=command_project_event)
+
+    plan = commands.add_parser("plan", help="Validate Carpe Diem planning artifacts")
+    plan_commands = plan.add_subparsers(dest="plan_command", required=True)
+    validate = plan_commands.add_parser(
+        "validate", help="Check that a rendered project plan is handoff-ready"
+    )
+    validate.add_argument("--file", required=True)
+    validate.add_argument("--json", action="store_true")
+    validate.set_defaults(handler=command_plan_validate)
+
+    diff = plan_commands.add_parser(
+        "diff", help="Show a read-only diff for a managed plan or handoff file"
+    )
+    diff.add_argument("--before", required=True)
+    diff.add_argument("--after", required=True)
+    diff.add_argument("--json", action="store_true")
+    diff.set_defaults(handler=command_plan_diff)
 
     return parser
 

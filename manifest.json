@@ -11,6 +11,9 @@
     "references/stages/validate.md",
     "references/stages/plan.md",
     "references/stages/track.md",
+    "templates/project-plan.md",
+    "templates/project-handoff.md",
+    "templates/progress-summary.md",
     "scripts/carpe_diem.py"
   ]
 }

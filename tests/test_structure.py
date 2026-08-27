@@ -34,6 +34,9 @@ class SkillStructureTests(unittest.TestCase):
             "references/stages/validate.md",
             "references/stages/plan.md",
             "references/stages/track.md",
+            "templates/project-plan.md",
+            "templates/project-handoff.md",
+            "templates/progress-summary.md",
             "scripts/carpe_diem.py",
         }
         self.assertTrue(required.issubset(set(manifest["files"])))
@@ -62,6 +65,20 @@ class SkillStructureTests(unittest.TestCase):
         for relative_path in shared_paths:
             with self.subTest(resource=relative_path):
                 self.assertIn(relative_path, entrypoint)
+                self.assertTrue((ROOT / relative_path).is_file())
+
+    def test_plan_stage_links_each_output_template(self):
+        plan_stage = (ROOT / "references" / "stages" / "plan.md").read_text(
+            encoding="utf-8"
+        )
+        templates = (
+            "templates/project-plan.md",
+            "templates/project-handoff.md",
+            "templates/progress-summary.md",
+        )
+        for relative_path in templates:
+            with self.subTest(template=relative_path):
+                self.assertIn(relative_path, plan_stage)
                 self.assertTrue((ROOT / relative_path).is_file())
 
 

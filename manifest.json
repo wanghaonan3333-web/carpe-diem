@@ -3,7 +3,12 @@
   "version": "0.1.0",
   "schema_version": 1,
   "files": [
+    "manifest.json",
     "SKILL.md",
+    "adapters/codex/INSTALL.md",
+    "adapters/claude-code/INSTALL.md",
+    "adapters/cursor/INSTALL.md",
+    "adapters/openclaw/INSTALL.md",
     "references/methodology.md",
     "references/state-schema.md",
     "references/safety-boundaries.md",

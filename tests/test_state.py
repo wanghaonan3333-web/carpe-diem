@@ -152,6 +152,63 @@ class ProfileStateTests(unittest.TestCase):
             updated = json.loads(profile.read_text(encoding="utf-8"))
             self.assertEqual(updated["interests"], [])
 
+    def test_correcting_a_fact_requires_a_reviewed_replacement_proposal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            profile = Path(directory) / "profiles" / "me.json"
+            first_proposal = self.create_proposal(profile, directory)
+            applied = run_cli(
+                "state", "apply", "--profile", str(profile), "--proposal", str(first_proposal)
+            )
+            self.assertEqual(applied.returncode, 0, applied.stderr)
+            saved = json.loads(profile.read_text(encoding="utf-8"))
+            fact_id = saved["interests"][0]["id"]
+
+            proposed = run_cli(
+                "state",
+                "propose",
+                "--profile",
+                str(profile),
+                "--field",
+                "interests",
+                "--replace-id",
+                fact_id,
+                "--value",
+                "跨 Agent 的项目引导工具",
+                "--kind",
+                "explicit",
+                "--basis",
+                "用户纠正表述",
+                "--json",
+            )
+
+            self.assertEqual(proposed.returncode, 0, proposed.stderr)
+            proposal_payload = json.loads(proposed.stdout)
+            self.assertEqual(proposal_payload["operation"], "replace_profile_fact")
+            self.assertEqual(proposal_payload["previous_fact"]["id"], fact_id)
+            self.assertEqual(
+                json.loads(profile.read_text(encoding="utf-8"))["interests"][0]["value"],
+                "跨 Agent 的本地优先工具",
+            )
+            proposal_path = Path(directory) / "replacement.json"
+            proposal_path.write_text(proposed.stdout, encoding="utf-8")
+
+            corrected = run_cli(
+                "state",
+                "apply",
+                "--profile",
+                str(profile),
+                "--proposal",
+                str(proposal_path),
+                "--json",
+            )
+
+            self.assertEqual(corrected.returncode, 0, corrected.stderr)
+            updated = json.loads(profile.read_text(encoding="utf-8"))
+            self.assertEqual(updated["revision"], 2)
+            self.assertEqual(len(updated["interests"]), 1)
+            self.assertEqual(updated["interests"][0]["id"], fact_id)
+            self.assertEqual(updated["interests"][0]["value"], "跨 Agent 的项目引导工具")
+
     def test_portable_export_redacts_local_paths(self):
         with tempfile.TemporaryDirectory() as directory:
             profile = Path(directory) / "me.json"

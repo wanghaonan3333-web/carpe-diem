@@ -21,6 +21,24 @@ def run_cli(*args):
 
 
 class ProjectStateTests(unittest.TestCase):
+    def test_project_status_reads_current_state_without_writing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "project"
+            project.mkdir()
+            initialized = run_cli("project", "init", "--root", str(project), "--json")
+            self.assertEqual(initialized.returncode, 0, initialized.stderr)
+            state_path = project / ".carpe-diem" / "project-state.json"
+            before = state_path.read_bytes()
+
+            result = run_cli("project", "status", "--root", str(project), "--json")
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            payload = json.loads(result.stdout)
+            self.assertEqual(payload["phase"], "discover")
+            self.assertEqual(payload["revision"], 1)
+            self.assertEqual(payload["next_recommended"], "建立第一张机会地图")
+            self.assertEqual(state_path.read_bytes(), before)
+
     def test_project_init_creates_only_local_carpe_diem_state(self):
         with tempfile.TemporaryDirectory() as directory:
             project = Path(directory) / "project"

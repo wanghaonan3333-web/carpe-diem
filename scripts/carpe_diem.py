@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -113,11 +114,21 @@ def command_state_read(args: argparse.Namespace) -> int:
 def command_state_propose(args: argparse.Namespace) -> int:
     profile_path = Path(args.profile)
     _, profile = load_profile(profile_path)
-    identity_input = "\0".join((args.field, args.value, args.kind, args.basis))
-    fact_id = hashlib.sha256(identity_input.encode("utf-8")).hexdigest()[:16]
+    previous_fact = None
+    fact_id = args.replace_id
+    if fact_id:
+        previous_fact = next(
+            (fact for fact in profile[args.field] if fact.get("id") == fact_id), None
+        )
+        if previous_fact is None:
+            print("replacement fact was not found in the selected field", file=sys.stderr)
+            return 2
+    else:
+        identity_input = "\0".join((args.field, args.value, args.kind, args.basis))
+        fact_id = hashlib.sha256(identity_input.encode("utf-8")).hexdigest()[:16]
     proposal = {
         "proposal_version": 1,
-        "operation": "add_profile_fact",
+        "operation": "replace_profile_fact" if previous_fact else "add_profile_fact",
         "path": str(profile_path),
         "base_revision": profile["revision"],
         "field": args.field,
@@ -131,6 +142,8 @@ def command_state_propose(args: argparse.Namespace) -> int:
             "last_used_at": None,
         },
     }
+    if previous_fact:
+        proposal["previous_fact"] = previous_fact
     if args.json:
         print(json.dumps(proposal, ensure_ascii=False, sort_keys=True))
     else:
@@ -144,7 +157,8 @@ def command_state_apply(args: argparse.Namespace) -> int:
     with proposal_path.open("r", encoding="utf-8") as stream:
         proposal = json.load(stream)
 
-    if proposal.get("operation") != "add_profile_fact":
+    operation = proposal.get("operation")
+    if operation not in ("add_profile_fact", "replace_profile_fact"):
         print("unsupported proposal operation", file=sys.stderr)
         return 2
     if Path(proposal.get("path", "")) != profile_path:
@@ -166,7 +180,22 @@ def command_state_apply(args: argparse.Namespace) -> int:
     fact["confidence"] = "confirmed"
     fact["confirmed_at"] = now
     fact["last_used_at"] = now
-    profile[field].append(fact)
+    if operation == "replace_profile_fact":
+        previous_id = proposal.get("previous_fact", {}).get("id")
+        replacement_index = next(
+            (
+                index
+                for index, existing in enumerate(profile[field])
+                if existing.get("id") == previous_id
+            ),
+            None,
+        )
+        if replacement_index is None:
+            print("replacement fact was not found", file=sys.stderr)
+            return 3
+        profile[field][replacement_index] = fact
+    else:
+        profile[field].append(fact)
     profile["revision"] += 1
     profile["updated_at"] = now
     atomic_write_json(profile_path, profile)
@@ -306,6 +335,36 @@ def command_project_init(args: argparse.Namespace) -> int:
     else:
         print(
             f"project={status} phase={state['phase']} revision={state['revision']} path={state_path}"
+        )
+    return 0
+
+
+def command_project_status(args: argparse.Namespace) -> int:
+    root = Path(args.root)
+    state_path = root / ".carpe-diem" / "project-state.json"
+    if not state_path.is_file():
+        print("project state does not exist; run project init first", file=sys.stderr)
+        return 2
+    try:
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as error:
+        print(f"project state is corrupted and was left unchanged: {state_path}", file=sys.stderr)
+        return 4
+    payload = {
+        "status": "existing",
+        "path": str(state_path),
+        "project_id": state.get("project_id"),
+        "phase": state.get("phase"),
+        "revision": state.get("revision"),
+        "next_recommended": state.get("next_recommended"),
+        "state": state,
+    }
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    else:
+        print(
+            f"project=existing phase={payload['phase']} revision={payload['revision']} "
+            f"next={payload['next_recommended']}"
         )
     return 0
 
@@ -533,9 +592,294 @@ def command_evidence_git(args: argparse.Namespace) -> int:
     return 0
 
 
+INSTALL_TARGETS = {
+    "codex": Path.home() / ".codex" / "skills" / "carpe-diem",
+    "claude-code": Path.home() / ".claude" / "skills" / "carpe-diem",
+    "cursor": Path.home() / ".cursor" / "skills" / "carpe-diem",
+    "openclaw": Path.home() / ".openclaw" / "skills" / "carpe-diem",
+}
+
+INSTALL_ROOTS = {
+    "codex": (".codex", "skills"),
+    "claude-code": (".claude", "skills"),
+    "cursor": (".cursor", "skills"),
+    "openclaw": (".openclaw", "skills"),
+}
+
+PLATFORM_COMMANDS = {
+    "codex": "codex",
+    "claude-code": "claude",
+    "cursor": "cursor",
+    "openclaw": "openclaw",
+}
+
+
+def command_install_detect(args: argparse.Namespace) -> int:
+    home = Path(args.home).expanduser().absolute()
+    platforms = []
+    for platform, parts in INSTALL_ROOTS.items():
+        root = home.joinpath(*parts)
+        executable = shutil.which(PLATFORM_COMMANDS[platform])
+        platforms.append(
+            {
+                "platform": platform,
+                "root": str(root),
+                "root_exists": root.is_dir(),
+                "target": str(root / "carpe-diem"),
+                "target_exists": (root / "carpe-diem").is_dir(),
+                "command": PLATFORM_COMMANDS[platform],
+                "command_path": executable,
+            }
+        )
+    payload = {"status": "ok", "home": str(home), "platforms": platforms}
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    else:
+        for item in platforms:
+            print(
+                f"{item['platform']} root={'yes' if item['root_exists'] else 'no'} "
+                f"command={item['command_path'] or '-'} target={item['target']}"
+            )
+    return 0
+
+
+def snapshot_fingerprint(root: Path, files: Sequence[str]) -> str:
+    digest = hashlib.sha256()
+    for relative_path in sorted(files):
+        path = root / relative_path
+        if not path.is_file():
+            raise FileNotFoundError(f"snapshot file is missing: {relative_path}")
+        digest.update(relative_path.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def command_install_plan(args: argparse.Namespace) -> int:
+    source = Path(args.source).resolve()
+    manifest_path = source / "manifest.json"
+    if not manifest_path.is_file():
+        print("source does not contain manifest.json", file=sys.stderr)
+        return 2
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    files = manifest.get("files", [])
+    try:
+        fingerprint = snapshot_fingerprint(source, files)
+    except FileNotFoundError as error:
+        print(str(error), file=sys.stderr)
+        return 2
+    target = Path(args.target).resolve() if args.target else INSTALL_TARGETS[args.platform]
+    plan = {
+        "plan_version": 1,
+        "operation": "install",
+        "platform": args.platform,
+        "source": str(source),
+        "target": str(target),
+        "version": manifest["version"],
+        "fingerprint": fingerprint,
+        "files": files,
+    }
+    if args.json:
+        print(json.dumps(plan, ensure_ascii=False, sort_keys=True))
+    else:
+        print(
+            f"install-plan platform={args.platform} version={manifest['version']} target={target}"
+        )
+        print(f"fingerprint={fingerprint}")
+    return 0
+
+
+def command_install_apply(args: argparse.Namespace) -> int:
+    if not args.yes:
+        print("installation requires explicit --yes after reviewing the plan", file=sys.stderr)
+        return 2
+    plan_path = Path(args.plan)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    if plan.get("operation") != "install":
+        print("invalid install plan", file=sys.stderr)
+        return 2
+    source = Path(plan["source"])
+    target = Path(plan["target"])
+    files = plan["files"]
+    try:
+        current_fingerprint = snapshot_fingerprint(source, files)
+    except FileNotFoundError as error:
+        print(str(error), file=sys.stderr)
+        return 2
+    if current_fingerprint != plan["fingerprint"]:
+        print("source changed after the install plan was reviewed", file=sys.stderr)
+        return 3
+    if target.exists():
+        print("install target already exists; refusing to overwrite", file=sys.stderr)
+        return 3
+
+    target.parent.mkdir(parents=True, exist_ok=True)
+    staging = Path(tempfile.mkdtemp(prefix=f".{target.name}.", dir=str(target.parent)))
+    try:
+        for relative_path in files:
+            destination = staging / relative_path
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source / relative_path, destination)
+        receipt = {
+            "receipt_version": 1,
+            "platform": plan["platform"],
+            "version": plan["version"],
+            "fingerprint": plan["fingerprint"],
+            "files": files,
+            "installed_at": utc_now(),
+        }
+        atomic_write_json(staging / ".carpe-diem-install.json", receipt)
+        os.replace(staging, target)
+    finally:
+        if staging.exists():
+            shutil.rmtree(staging)
+
+    payload = {
+        "status": "installed",
+        "platform": plan["platform"],
+        "target": str(target),
+        "version": plan["version"],
+        "fingerprint": plan["fingerprint"],
+    }
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    else:
+        print(f"skill=installed platform={plan['platform']} target={target}")
+    return 0
+
+
+def command_install_verify(args: argparse.Namespace) -> int:
+    target = Path(args.target)
+    receipt_path = target / ".carpe-diem-install.json"
+    if not receipt_path.is_file():
+        print("install receipt is missing", file=sys.stderr)
+        return 2
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    try:
+        actual = snapshot_fingerprint(target, receipt["files"])
+    except FileNotFoundError as error:
+        print(str(error), file=sys.stderr)
+        return 2
+    valid = actual == receipt["fingerprint"]
+    payload = {
+        "valid": valid,
+        "target": str(target),
+        "version": receipt["version"],
+        "expected_fingerprint": receipt["fingerprint"],
+        "actual_fingerprint": actual,
+    }
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    else:
+        print(f"install={'valid' if valid else 'changed'} target={target}")
+    return 0 if valid else 1
+
+
+def command_install_uninstall(args: argparse.Namespace) -> int:
+    if not args.yes:
+        print("uninstall requires explicit --yes after reviewing the target", file=sys.stderr)
+        return 2
+    target = Path(args.target)
+    receipt_path = target / ".carpe-diem-install.json"
+    if not receipt_path.is_file():
+        print("install receipt is missing; refusing to delete", file=sys.stderr)
+        return 3
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    try:
+        actual = snapshot_fingerprint(target, receipt["files"])
+    except FileNotFoundError:
+        print("installed snapshot changed; refusing to delete", file=sys.stderr)
+        return 3
+    if actual != receipt["fingerprint"]:
+        print("installed snapshot changed; refusing to delete", file=sys.stderr)
+        return 3
+    shutil.rmtree(target)
+    payload = {"status": "uninstalled", "target": str(target)}
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    else:
+        print(f"skill=uninstalled target={target}")
+    return 0
+
+
+def command_doctor(args: argparse.Namespace) -> int:
+    source = Path(args.source).resolve()
+    profile_path = Path(args.profile)
+    errors = []
+    warnings = []
+    checks = {
+        "python": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+        "source": str(source),
+        "profile": str(profile_path),
+    }
+    if sys.version_info < (3, 10):
+        errors.append(
+            {"code": "python_too_old", "message": "Carpe Diem requires Python 3.10+"}
+        )
+
+    manifest_path = source / "manifest.json"
+    if not manifest_path.is_file():
+        errors.append({"code": "manifest_missing", "message": "manifest.json is missing"})
+    else:
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            files = manifest.get("files", [])
+            snapshot_fingerprint(source, files)
+            checks["version"] = manifest.get("version")
+            checks["runtime_files"] = len(files)
+        except (json.JSONDecodeError, FileNotFoundError, TypeError) as error:
+            errors.append({"code": "manifest_invalid", "message": str(error)})
+
+    skill_path = source / "SKILL.md"
+    if not skill_path.is_file():
+        errors.append({"code": "skill_missing", "message": "SKILL.md is missing"})
+    else:
+        skill_text = skill_path.read_text(encoding="utf-8")
+        if not skill_text.startswith("---\n") or "\nname: carpe-diem\n" not in skill_text:
+            errors.append(
+                {"code": "skill_frontmatter_invalid", "message": "SKILL.md frontmatter is invalid"}
+            )
+
+    if not profile_path.exists():
+        warnings.append(
+            {
+                "code": "profile_missing",
+                "message": "no personal profile yet; the first guided session can create one",
+            }
+        )
+    else:
+        try:
+            load_profile(profile_path)
+        except StateCorruptedError as error:
+            errors.append({"code": "profile_corrupted", "message": str(error)})
+
+    payload = {
+        "valid": not errors,
+        "checks": checks,
+        "errors": errors,
+        "warnings": warnings,
+    }
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    else:
+        print(f"doctor={'ok' if not errors else 'failed'}")
+        for warning in warnings:
+            print(f"WARN {warning['code']}: {warning['message']}")
+        for error in errors:
+            print(f"ERROR {error['code']}: {error['message']}")
+    return 0 if not errors else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="carpe-diem")
     commands = parser.add_subparsers(dest="command", required=True)
+
+    doctor = commands.add_parser("doctor", help="Check local runtime integrity without writing")
+    doctor.add_argument("--source", default=".")
+    doctor.add_argument("--profile", default=str(default_profile_path()))
+    doctor.add_argument("--json", action="store_true")
+    doctor.set_defaults(handler=command_doctor)
 
     state = commands.add_parser("state", help="Manage local user profile state")
     state_commands = state.add_subparsers(dest="state_command", required=True)
@@ -550,6 +894,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     propose.add_argument("--profile", default=str(default_profile_path()))
     propose.add_argument("--field", choices=PROFILE_LIST_FIELDS, required=True)
+    propose.add_argument("--replace-id")
     propose.add_argument("--value", required=True)
     propose.add_argument(
         "--kind", choices=("observed", "inferred", "explicit"), required=True
@@ -591,6 +936,13 @@ def build_parser() -> argparse.ArgumentParser:
     initialize.add_argument("--json", action="store_true")
     initialize.set_defaults(handler=command_project_init)
 
+    project_status = project_commands.add_parser(
+        "status", help="Read current project guidance state without changing it"
+    )
+    project_status.add_argument("--root", default=".")
+    project_status.add_argument("--json", action="store_true")
+    project_status.set_defaults(handler=command_project_status)
+
     event = project_commands.add_parser(
         "event", help="Record a confirmed project guidance event"
     )
@@ -628,6 +980,47 @@ def build_parser() -> argparse.ArgumentParser:
     git_evidence.add_argument("--since")
     git_evidence.add_argument("--json", action="store_true")
     git_evidence.set_defaults(handler=command_evidence_git)
+
+    install = commands.add_parser("install", help="Plan and verify skill installation")
+    install_commands = install.add_subparsers(dest="install_command", required=True)
+    install_detect = install_commands.add_parser(
+        "detect", help="Inspect supported skill roots without changing them"
+    )
+    install_detect.add_argument("--home", default=str(Path.home()))
+    install_detect.add_argument("--json", action="store_true")
+    install_detect.set_defaults(handler=command_install_detect)
+
+    install_plan = install_commands.add_parser(
+        "plan", help="Create a reviewable install plan without writing"
+    )
+    install_plan.add_argument("--platform", choices=tuple(INSTALL_TARGETS), required=True)
+    install_plan.add_argument("--source", default=".")
+    install_plan.add_argument("--target")
+    install_plan.add_argument("--json", action="store_true")
+    install_plan.set_defaults(handler=command_install_plan)
+
+    install_apply = install_commands.add_parser(
+        "apply", help="Apply an unchanged install plan after confirmation"
+    )
+    install_apply.add_argument("--plan", required=True)
+    install_apply.add_argument("--yes", action="store_true")
+    install_apply.add_argument("--json", action="store_true")
+    install_apply.set_defaults(handler=command_install_apply)
+
+    install_verify = install_commands.add_parser(
+        "verify", help="Verify installed files against their receipt"
+    )
+    install_verify.add_argument("--target", required=True)
+    install_verify.add_argument("--json", action="store_true")
+    install_verify.set_defaults(handler=command_install_verify)
+
+    install_uninstall = install_commands.add_parser(
+        "uninstall", help="Remove only an unchanged receipt-backed installation"
+    )
+    install_uninstall.add_argument("--target", required=True)
+    install_uninstall.add_argument("--yes", action="store_true")
+    install_uninstall.add_argument("--json", action="store_true")
+    install_uninstall.set_defaults(handler=command_install_uninstall)
 
     return parser
 

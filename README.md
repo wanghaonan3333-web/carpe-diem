@@ -108,6 +108,28 @@ python3 scripts/carpe_diem.py doctor --source . --json
 git diff --check
 ```
 
+## Changelog
+
+### v0.2.0 — 2026-09-01
+
+**Wisdom Distillation System — 33 behavior cards across all stages**
+
+This major update completes the wisdom distillation work, embedding 24 thought leaders' and 16 engineering case studies' actionable insights into Carpe Diem's four-stage flow.
+
+**New for users:**
+- Carpe Diem now dynamically loads behavior cards based on which stage you're in and what you say — when you mention "a lot of people say this is a good idea", it will load the Mom Test card and guide you to distinguish genuine signals from polite praise, without you needing to know the card exists
+- The same applies across all four stages: Discover (5 cards), Validate (4), Plan (9), Track (9), plus 6 cross-stage cards that apply regardless of stage
+- Each card provides 5-6 concrete, actionable steps you can execute in 3-5 conversation turns
+
+**New for contributors:**
+- A complete distillation pipeline (research → plan → implement → integrate) documented in `docs/wisdom-distillation-guide.md`
+- Clear three-iron-rules: no source names exposed, no abstract concepts, actionable steps only
+- The `manifest.json` now includes all wisdom cards, so `bash install.sh` deploys them correctly
+
+### v0.1.1 — 2026-08-31
+
+Hardens installer path validation, completes lifecycle recovery rules, scopes session authorization reuse, and improves bilingual discovery and responses.
+
 ## Feedback and contributions
 
 Because this is the first release, feedback is especially valuable. Please open an issue with:

@@ -9,24 +9,67 @@
 wisdom/
 ├── README.md                    # 本文件
 ├── mentors/                     # 行为卡（Mentor 卡片）：按阶段触发的可操作行为指导
-│   ├── README.md                 # 卡片索引和阶段匹配规则
+│   ├── README.md                 # 卡片索引和阶段匹配规则（55 张）
 │   ├── discover/
 │   │   ├── mom-test.md           # 识别用户反馈中的真实信号
-│   │   └── scratch-your-itch.md  # 从自身摩擦出发找项目
+│   │   ├── scratch-your-itch.md  # 从自身摩擦出发找项目
+│   │   ├── jtbd-work-statement.md# 用工作陈述定义方向
+│   │   ├── secret-test.md        # 反共识检验
+│   │   └── dirty-work-test.md    # 脏活测试
 │   ├── validate/
 │   │   ├── test-card.md          # 假设验证卡
-│   │   └── handmade-first.md     # 手工验证优先
+│   │   ├── handmade-first.md     # 手工验证优先
+│   │   ├── behavior-signal.md    # 行为信号
+│   │   ├── continuous-check.md   # 持续验证
+│   │   ├── pricing-test.md       # 定价验证
+│   │   ├── competitive-analysis.md# 竞品/替代品分析
+│   │   ├── experiment-design.md  # 实验设计
+│   │   ├── gonogo-decision.md    # Go/No-Go 决策
+│   │   └── user-interview.md     # 用户访谈技巧
 │   ├── plan/
 │   │   ├── strategy-kernel.md    # 战略内核
 │   │   ├── appetite-constraint.md# 时间预算约束
-│   │   └── c4-architecture.md    # 架构可视化
+│   │   ├── c4-architecture.md    # 架构可视化
+│   │   ├── bounded-context.md    # 上下文边界
+│   │   ├── adr-rfc-enhance.md    # ADR 增强
+│   │   ├── pitch-format.md       # Pitch 格式
+│   │   ├── stability-patterns.md # 稳定性设计模式
+│   │   ├── test-first.md         # 测试优先
+│   │   ├── document-as-deliverable.md# 文档即交付物
+│   │   ├── api-design.md         # API 设计哲学
+│   │   ├── data-modeling.md      # 数据建模
+│   │   ├── security-design.md    # 安全设计
+│   │   └── rfc-design.md         # RFC / 设计文档
 │   ├── track/
 │   │   ├── certainty-level.md    # 确定性分级
 │   │   ├── wip-detection.md      # WIP 检测
-│   │   └── constraint-diagnosis.md# 约束诊断
+│   │   ├── constraint-diagnosis.md# 约束诊断
+│   │   ├── four-metrics.md       # 四种量化指标
+│   │   ├── milestone-state.md    # 里程碑状态
+│   │   ├── heartbeat.md          # 心跳
+│   │   ├── integration-health.md # 集成健康度
+│   │   ├── regular-departure.md  # 定期发车
+│   │   ├── value-stream.md       # 价值流
+│   │   ├── observability.md      # 可观测性
+│   │   ├── code-review.md        # Code Review
+│   │   ├── retrospective.md      # 回顾 / 复盘
+│   │   └── tech-debt.md          # 技术债管理
 │   └── cross/
 │       ├── beachhead.md          # 先攻一个窄市场再扩张
-│       └── say-no-by-default.md  # 默认说"不"
+│       ├── say-no-by-default.md  # 默认说"不"
+│       ├── complexity-budget.md  # 复杂度预算
+│       ├── handmade-validation.md# 手工服务不扩展
+│       ├── pmf-survey.md         # PMF 满意度调查
+│       ├── user-behavior-metric.md# 用户行为指标
+│       ├── premature-optimization.md# 过早优化
+│       ├── feature-creep.md      # 功能蔓延
+│       ├── analysis-paralysis.md # 分析瘫痪
+│       ├── unicorn-mindset.md    # 独角兽思维
+│       ├── async-communication.md# 异步沟通
+│       ├── growth-flywheel.md    # 增长飞轮
+│       ├── user-retention.md     # 用户留存
+│       ├── product-strategy.md   # 产品战略
+│       └── continuous-discovery.md# 持续发现
 ├── real-world-patterns/         # 从真实案例中提取的实战模式
 │   ├── claude-code-best-practices.md
 │   ├── building-effective-agents.md

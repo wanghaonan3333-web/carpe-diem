@@ -1,7 +1,7 @@
 # Carpe Diem 智慧蒸馏总结
 
 > 本文档汇总了 Carpe Diem 智慧蒸馏工作的完整全景——从研究到产出，从人物到卡片。
-> 最后更新：2026-09-01（第四阶段完成）
+> 最后更新：2026-09-02（第五阶段完成 — Phase 5-9 扩展，共 55 张行为卡）
 
 ---
 
@@ -93,7 +93,7 @@ Carpe Diem 的智慧蒸馏遵循三条铁律：
 | `docs/research/2026-08-30-cross-stage-wisdom-sources.md` | 跨阶段 4 位人物 + 4 个项目案例 | ~200+ |
 | **`docs/wisdom-distillation-plan.md`** | **综合规划蓝图（汇总文件）** | **549** |
 
-### 3.2 行为卡（33 张 — 全阶段完成）
+### 3.2 行为卡（55 张 — 全阶段完成）
 
 | 阶段 | 卡片 | 文件 | 行数 | 关键问题 |
 |------|------|------|------|---------|
@@ -130,13 +130,35 @@ Carpe Diem 的智慧蒸馏遵循三条铁律：
 | **Cross** | 手工服务不扩展 | `mentors/cross/handmade-validation.md` | 112 | 如何在自动化之前先亲手服务用户，用不可扩展的手工服务获取深度反馈 |
 | **Cross** | PMF 满意度调查 | `mentors/cross/pmf-survey.md` | 111 | 如何用"如果不能再使用，你会多失望"调查和 40% 阈值判断 PMF |
 | **Cross** | 用户行为指标 | `mentors/cross/user-behavior-metric.md` | 133 | 如何区分虚荣指标和可行动指标，用同期群分析指导决策 |
+| **Validate** | 定价验证 | `mentors/validate/pricing-test.md` | 105 | 如何在投入开发前测试用户是否愿意付钱，区分"感兴趣"和"愿意付费" |
+| **Validate** | 竞品/替代品分析 | `mentors/validate/competitive-analysis.md` | 93 | 如何系统化分析直接竞品、间接竞品和替代方案，理解用户的选择逻辑和切换成本 |
+| **Validate** | 实验设计 | `mentors/validate/experiment-design.md` | 117 | 如何用最小投入设计验证实验，根据结果决定继续/转向/放弃 |
+| **Validate** | Go/No-Go 决策 | `mentors/validate/gonogo-decision.md` | 107 | 如何基于事前设定的标准而非沉没成本，做出明确的继续、转向或放弃决定 |
+| **Validate** | 用户访谈技巧 | `mentors/validate/user-interview.md` | 114 | 如何通过问过去行为、具体场景和追问"为什么"，从访谈中获取真实的用户需求信号 |
+| **Cross** | 过早优化 | `mentors/cross/premature-optimization.md` | 99 | 如何在方向未验证时，避免把时间花在性能/扩展性/通用性上，专注于验证核心价值 |
+| **Cross** | 功能蔓延 | `mentors/cross/feature-creep.md` | 97 | 如何控制功能增长，避免产品臃肿、维护成本飙升、核心价值模糊 |
+| **Cross** | 分析瘫痪 | `mentors/cross/analysis-paralysis.md` | 96 | 如何用决策截止时间、可逆/不可逆决策区分、足够好原则替代最优原则 |
+| **Cross** | 独角兽思维 | `mentors/cross/unicorn-mindset.md` | 96 | 如何从第一个用户出发而非市场规模，先聚焦再扩展，接受小众市场 |
+| **Plan** | RFC / 设计文档 | `mentors/plan/rfc-design.md` | 93 | 如何用书面化决策替代口头决策，让团队对齐、让历史可查 |
+| **Track** | Code Review | `mentors/track/code-review.md` | 98 | 如何用小而专注的 PR、关注设计而非细节、针对代码而非作者，让 CR 成为知识传递工具 |
+| **Track** | 回顾 / 复盘 | `mentors/track/retrospective.md` | 93 | 如何用无指责基调、系统性原因分析、可执行的改进措施，把错误转化为改进机会 |
+| **Track** | 技术债管理 | `mentors/track/tech-debt.md` | 93 | 如何区分有意债务和糟糕代码，用 20% 还债时间和童子军规则控制技术债累积 |
+| **Cross** | 异步沟通 | `mentors/cross/async-communication.md` | 93 | 如何用文档替代会议、设定回复期望、区分同步和异步场景，让团队保持深度工作状态 |
+| **Cross** | 增长飞轮 | `mentors/cross/growth-flywheel.md` | 109 | 如何找到增长循环让每个用户带来更多用户，而非依赖外部流量或加功能 |
+| **Cross** | 用户留存 | `mentors/cross/user-retention.md` | 123 | 如何理解用户为什么留下和离开，通过激活、留存曲线和关键行为分析优化留存 |
+| **Cross** | 产品战略 | `mentors/cross/product-strategy.md` | 114 | 如何定义"我们是谁、为谁服务、解决什么问题"，用战略指导每个功能决策 |
+| **Cross** | 持续发现 | `mentors/cross/continuous-discovery.md` | 127 | 如何在产品生命周期中持续了解用户需求，让发现结果驱动路线图 |
+| **Plan** | API 设计哲学 | `mentors/plan/api-design.md` | 91 | 如何先设计 API 再实现，用一致性、直觉性、版本化和文档化构建调用者友好的接口 |
+| **Track** | 可观测性 | `mentors/track/observability.md` | — | 如何用日志/指标/追踪三支柱建立主动监控，在问题发生前发现异常 |
+| **Plan** | 数据建模 | `mentors/plan/data-modeling.md` | — | 如何从业务概念出发设计数据模型，用约束保障数据完整性 |
+| **Plan** | 安全设计 | `mentors/plan/security-design.md` | — | 如何在设计阶段融入安全考量，用最小权限、输入校验、安全库和响应计划构建安全体系 |
 
 ### 3.3 索引与集成
 
 | 文件 | 内容 | 行数 |
 |------|------|------|
-| `references/wisdom/mentors/README.md` | 行为卡索引（33 张）、阶段匹配规则、触发条件匹配规则 | 128 |
-| `SKILL.md`（已更新） | 步骤 6 扩展为双类智慧卡片加载机制，涵盖全阶段 33 张行为卡 | — |
+| `references/wisdom/mentors/README.md` | 行为卡索引（55 张）、阶段匹配规则、触发条件匹配规则 | 234 |
+| `SKILL.md`（已更新） | 步骤 6 扩展为双类智慧卡片加载机制，涵盖全阶段 55 张行为卡 | — |
 
 ---
 
@@ -161,7 +183,17 @@ Carpe Diem 的智慧蒸馏遵循三条铁律：
                                 test-first, document-as-deliverable,
                                 integration-health, regular-departure, value-stream,
                                 handmade-validation, pmf-survey, user-behavior-metric
-  总计: 33 张 — 全阶段完成 ✅
+  第五阶段（Phase 5 - Validate 补强）: ✅ 5 张 — pricing-test, competitive-analysis,
+                                experiment-design, gonogo-decision, user-interview
+  第六阶段（Phase 6 - 反模式系列）: ✅ 4 张 — premature-optimization, feature-creep,
+                                analysis-paralysis, unicorn-mindset
+  第七阶段（Phase 7 - 团队与协作）: ✅ 5 张 — rfc-design, code-review, retrospective,
+                                tech-debt, async-communication
+  第八阶段（Phase 8 - 产品维度）: ✅ 4 张 — growth-flywheel, user-retention,
+                                product-strategy, continuous-discovery
+  第九阶段（Phase 9 - 工程维度）: ✅ 4 张 — api-design, observability, data-modeling,
+                                security-design
+  总计: 55 张 — 全阶段完成 ✅
 ```
 
 ---
@@ -220,11 +252,11 @@ Carpe Diem 的智慧蒸馏遵循三条铁律：
 | 研究覆盖的人物 | **24 位** |
 | 研究覆盖的项目/书籍案例 | **16 个** |
 | 研究文件总行数 | **~1,400+ 行** |
-| 规划文档 | **549 行** |
-| 已创建的行为卡 | **33 张** |
-| 已完成的行为卡行数 | **~3,500+ 行** |
-| 规划中的总卡片数 | **33 张**（P0: 12 + P1: 14 + P2: 7） |
-| 总卡片完成率 | **100%**（33/33） |
+| 规划文档 | **549 行**（Phase 1-4）+ **427 行**（Phase 5-9） |
+| 已创建的行为卡 | **55 张**（33 原卡 + 22 新卡） |
+| 已完成的行为卡行数 | **~5,700+ 行** |
+| 规划中的总卡片数 | **55 张**（Phase 1-4: 33 + Phase 5-9: 22） |
+| 总卡片完成率 | **100%**（55/55） |
 
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: carpe-diem
 description: Help developers and creators who have a Coding Agent but no clear project direction discover, validate, plan, and track a worthwhile open-source project. Use when users need project direction, idea validation, a complete implementation plan, or read-only progress tracking; not for implementing features or writing business code.
+version: 0.2.0
 ---
 
 # Carpe Diem (English)

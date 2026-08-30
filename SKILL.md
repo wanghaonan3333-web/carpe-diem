@@ -1,6 +1,7 @@
 ---
 name: carpe-diem
 description: Help developers and creators who have a Coding Agent but no clear project direction discover, validate, plan, and track a worthwhile open-source project; 帮助手握 Coding Agent 却没有项目方向的开发者或创作者发现、验证、规划并跟踪值得开始的开源项目。Use when users need project direction, idea validation, a complete implementation plan, or read-only progress tracking; not for implementing features or writing business code.
+version: 0.2.0
 ---
 
 # Carpe Diem
@@ -53,7 +54,7 @@ description: Help developers and creators who have a Coding Agent but no clear p
       - 加载后，在对话中自然引用卡片中的关键洞察和反向提醒，避免生硬照搬
    b. **行为卡（Mentor 卡片）**（`mentors/`）：
       - 先阅读 `references/wisdom/mentors/README.md`，了解可用卡片及其触发条件
-      - 根据当前阶段自动加载对应阶段的行为卡：Discover → `mom-test`、`scratch-your-itch`、`jtbd-work-statement`、`secret-test`、`dirty-work-test`；Validate → `test-card`、`handmade-first`、`behavior-signal`、`continuous-check`；Plan → `strategy-kernel`、`appetite-constraint`、`c4-architecture`、`bounded-context`、`adr-rfc-enhance`、`pitch-format`、`stability-patterns`、`test-first`、`document-as-deliverable`；Track → `certainty-level`、`wip-detection`、`constraint-diagnosis`、`four-metrics`、`milestone-state`、`heartbeat`、`integration-health`、`regular-departure`、`value-stream`；跨阶段通用卡（`beachhead`、`say-no-by-default`、`complexity-budget`、`handmade-validation`、`pmf-survey`、`user-behavior-metric`）按阶段匹配规则加载
+      - 根据当前阶段自动加载对应阶段的行为卡（详见 `references/wisdom/mentors/README.md` 阶段匹配规则表）：Discover 阶段加载 `mom-test`、`scratch-your-itch`、`jtbd-work-statement`、`secret-test`、`dirty-work-test` 等 Discover 卡 + 跨阶段通用卡 + 反模式卡；Validate 阶段加载 `test-card`、`handmade-first`、`behavior-signal`、`continuous-check`、`pricing-test`、`competitive-analysis`、`experiment-design`、`gonogo-decision`、`user-interview` 等 Validate 卡 + 跨阶段通用卡 + 反模式卡；Plan 阶段加载 `strategy-kernel`、`appetite-constraint`、`c4-architecture`、`bounded-context`、`adr-rfc-enhance`、`pitch-format`、`stability-patterns`、`test-first`、`document-as-deliverable`、`api-design`、`data-modeling`、`security-design`、`rfc-design` 等 Plan 卡 + 跨阶段通用卡 + 反模式卡；Track 阶段加载 `certainty-level`、`wip-detection`、`constraint-diagnosis`、`four-metrics`、`milestone-state`、`heartbeat`、`integration-health`、`regular-departure`、`value-stream`、`observability`、`code-review`、`retrospective`、`tech-debt` 等 Track 卡 + 跨阶段通用卡 + 反模式卡
       - 同时根据用户对话中的触发条件（如"很多人说好"→`mom-test`、"不知道做什么"→`scratch-your-itch`、"先做出来再说"→`complexity-budget`），动态加载匹配的跨阶段或非当前阶段卡片
       - 加载后，将行为指导自然融入当前阶段的引导，而非单独展示"卡片内容"
 7. 当前阶段完成后，先展示要保存的摘要或 Diff；用户确认后再写状态和 `next_recommended`。

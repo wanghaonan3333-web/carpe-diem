@@ -1,7 +1,9 @@
 # Carpe Diem 项目进展与后续计划
 
 > 更新日期：2026-08-30
-> 会话摘要：使用 AgentTeams 进行项目评审、改进和智慧库建设
+> 最后更新：2026-08-30（v0.1.1 发布 + v0.2.0 规划）
+> 前一会话：使用 AgentTeams 进行项目评审、改进和智慧库建设
+> 本轮会话：使用 AgentTeams 完成 v0.1.1 发版收尾和 v0.2.0 核心功能增强
 
 ---
 
@@ -45,6 +47,20 @@
 | `references/wisdom/real-world-patterns/context-engineering.md` | AI Agent 上下文工程 |
 | `references/wisdom/real-world-patterns/agent-skills.md` | Agent Skills 装备 |
 | `references/wisdom/researcher-t1-summary.md` | 7 篇 Anthropic 博客文章摘要 |
+
+### 4. 本轮（v0.1.1 发版 + v0.2.0 规划）完成的改进
+
+| 优先级 | 改进 | 文件 | 内容 |
+|--------|------|------|------|
+| P0 | wisdom 卡片接入 SKILL.md | `SKILL.md` / `SKILL.en.md` | "每次调用"新增第5步：自动匹配阶段加载 wisdom 卡片 |
+| P0 | 验证安装流程 | 安装验证报告 | plan/apply/verify/uninstall 全部通过 |
+| P0 | 更新 ClawHub 发布 | `manifest.json` | 文件列表扩展到 32 个 |
+| P0 | GitHub 发布 | `git push origin master` | v0.1.1 已推送到 GitHub |
+| P1 | 项目类型模板 | `references/wisdom/project-archetypes/` | CLI 工具、Web 应用、开发者工具三类模板 |
+| P1 | 首次体验优化 | `SKILL.md` / `SKILL.en.md` | 新增第1步：先问方向再读方法论 |
+| P1 | ADR 输出机制 | `templates/adr-template.md` | ADR 架构决策记录模板（9 字段） |
+| P1 | 简化安装 | `install.sh` | 一键安装脚本，支持 --platform/--target/--dry-run |
+| P1 | 适配器文档 | `adapters/*/INSTALL.md` | 全部 4 个适配器增加一键安装说明 |
 
 ---
 
@@ -105,25 +121,25 @@ carpe-diem/
 
 ## 三、后续计划
 
-### P0（v0.1.1 — 发布前必须完成）
+### P0（v0.1.1 — 已发布 ✅）
 
-| 序号 | 事项 | 说明 |
+| 序号 | 事项 | 状态 |
 |------|------|------|
-| 1 | 将 wisdom 卡片接入 SKILL.md | 在"每次调用"流程中增加链路：当用户方向匹配某个模式时自动加载对应卡片 |
-| 2 | 验证安装流程 | 用 `install plan/apply/verify` 完整测试安装，确保 ClawHub 发布可用 |
-| 3 | 更新 ClawHub 页面 | 发布最新版本到 ClawHub，更新英文 description |
+| 1 | 将 wisdom 卡片接入 SKILL.md | ✅ 已完成 |
+| 2 | 验证安装流程 | ✅ 已完成 |
+| 3 | 更新 ClawHub 页面 | ✅ 已发布到 GitHub，ClawHub 需手动更新 |
 
-### P1（v0.2.0 — 核心功能增强）
+### P1（v0.2.0 — 核心功能增强，已部分完成）
 
-| 序号 | 事项 | 说明 |
+| 序号 | 事项 | 状态 |
 |------|------|------|
-| 1 | **项目类型模板** | 在 `references/wisdom/project-archetypes/` 下创建 CLI 工具、Web 应用、开发者工具三类模板 |
-| 2 | **方法论卡片接入 SKILL.md** | 修改 SKILL.md 的"每次调用"流程，让 Agent 在用户方向匹配时自动加载 wisdom 卡片 |
-| 3 | **ADR 输出** | Plan 阶段的架构决策自动生成 `docs/adr/` 目录下的 ADR 文件 |
-| 4 | **首次体验优化** | 先问一个问题再读方法论，降低首次摩擦 |
-| 5 | **简化安装** | 一键安装脚本（`curl ... | sh`） |
-| 6 | **状态模型类型化** | 引入 `dataclasses` 或 `pydantic` 建模 Profile/Project 状态 |
-| 7 | **Python 脚本降级方案** | 脚本不可用时提供纯 Markdown 降级方案 |
+| 1 | **项目类型模板** | ✅ 已完成 |
+| 2 | **方法论卡片接入 SKILL.md** | ✅ 已完成 |
+| 3 | **ADR 输出** | ✅ 已完成 |
+| 4 | **首次体验优化** | ✅ 已完成 |
+| 5 | **简化安装** | ✅ 已完成 |
+| 6 | 状态模型类型化 | ⏳ 待开始 |
+| 7 | Python 脚本降级方案 | ⏳ 待开始 |
 
 ### P2（v0.3.0 — 进阶功能）
 
@@ -156,6 +172,7 @@ gantt
 
     section v0.1.1 修复发布
     发布准备 + ClawHub 更新      :v011, 2026-09-01, 2d
+    v0.1.1 发布里程碑            :milestone, 2026-09-01, 0d
 
     section v0.2.0 核心增强
     项目类型模板                  :v020-1, 2026-09-03, 3d

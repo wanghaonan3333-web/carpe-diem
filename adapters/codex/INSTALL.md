@@ -1,5 +1,25 @@
 # Codex 适配
 
+## 一键安装
+
+```bash
+bash install.sh --platform codex
+```
+
+或指定安装目标：
+
+```bash
+bash install.sh --platform codex --target ~/.codex/skills/carpe-diem
+```
+
+预览安装计划：
+
+```bash
+bash install.sh --platform codex --dry-run
+```
+
+脚本会自动检测是否在 Carpe Diem 项目根目录中运行；如果不是，则从 GitHub 下载后执行。
+
 ## 用户级安装
 
 默认目标是 `~/.codex/skills/carpe-diem`。先在 Carpe Diem 源码目录生成计划：

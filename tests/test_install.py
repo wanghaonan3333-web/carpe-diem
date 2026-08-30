@@ -21,6 +21,105 @@ def run_cli(*args):
 
 
 class SkillInstallTests(unittest.TestCase):
+    def test_install_plan_rejects_manifest_path_outside_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source"
+            source.mkdir()
+            (root / "outside.txt").write_text("outside", encoding="utf-8")
+            (source / "manifest.json").write_text(
+                json.dumps(
+                    {
+                        "name": "carpe-diem",
+                        "version": "0.1.1",
+                        "schema_version": 1,
+                        "files": ["../outside.txt"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = run_cli(
+                "install",
+                "plan",
+                "--platform",
+                "codex",
+                "--source",
+                str(source),
+                "--target",
+                str(root / "target"),
+                "--json",
+            )
+
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("unsafe snapshot path", result.stderr)
+
+    def test_install_plan_rejects_absolute_manifest_path(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source"
+            source.mkdir()
+            outside = root / "outside.txt"
+            outside.write_text("outside", encoding="utf-8")
+            (source / "manifest.json").write_text(
+                json.dumps(
+                    {
+                        "name": "carpe-diem",
+                        "version": "0.1.1",
+                        "schema_version": 1,
+                        "files": [str(outside)],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = run_cli(
+                "install",
+                "plan",
+                "--platform",
+                "codex",
+                "--source",
+                str(source),
+                "--target",
+                str(root / "target"),
+                "--json",
+            )
+
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("unsafe snapshot path", result.stderr)
+
+    def test_install_apply_rejects_tampered_plan_path(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source"
+            source.mkdir()
+            outside = root / "outside.txt"
+            outside.write_text("outside", encoding="utf-8")
+            plan_path = root / "install-plan.json"
+            plan_path.write_text(
+                json.dumps(
+                    {
+                        "plan_version": 1,
+                        "operation": "install",
+                        "platform": "codex",
+                        "source": str(source),
+                        "target": str(root / "target"),
+                        "version": "0.1.1",
+                        "fingerprint": "not-relevant",
+                        "files": ["../outside.txt"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = run_cli(
+                "install", "apply", "--plan", str(plan_path), "--yes", "--json"
+            )
+
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("unsafe snapshot path", result.stderr)
+            self.assertFalse((root / "target").exists())
+
     def test_detect_reports_platform_roots_without_writing(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)

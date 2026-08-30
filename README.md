@@ -10,6 +10,8 @@ It does not ship its own model, and it is not a random idea generator. It uses t
 
 This is the first `v0.1` release. We are still testing the central hypothesis: can Carpe Diem genuinely help someone move from “I have an Agent” to “I have started a project worth pursuing”? We would love thoughtful, constructive, and candid feedback—what actually helped, what felt confusing, and where the guidance lost the thread. Every real-world story will help shape the next version.
 
+Current release: `v0.1.1`. This focused update hardens installer path validation, completes lifecycle recovery rules, scopes session authorization reuse, and improves bilingual discovery and responses.
+
 ## What it does
 
 Carpe Diem turns “I do not know what to build” into four stages:

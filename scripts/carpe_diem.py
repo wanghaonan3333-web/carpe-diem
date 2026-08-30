@@ -657,9 +657,33 @@ def command_install_detect(args: argparse.Namespace) -> int:
     return 0
 
 
+def validate_snapshot_files(root: Path, files: Sequence[str]) -> list[str]:
+    if not isinstance(files, list) or not files:
+        raise ValueError("snapshot files must be a non-empty list")
+
+    resolved_root = root.resolve()
+    validated = []
+    seen = set()
+    for relative_path in files:
+        if not isinstance(relative_path, str) or not relative_path:
+            raise ValueError("unsafe snapshot path: expected a non-empty string")
+        path = Path(relative_path)
+        if path.is_absolute() or any(part in ("", ".", "..") for part in path.parts):
+            raise ValueError(f"unsafe snapshot path: {relative_path}")
+        try:
+            (resolved_root / path).resolve().relative_to(resolved_root)
+        except ValueError as error:
+            raise ValueError(f"unsafe snapshot path: {relative_path}") from error
+        if relative_path in seen:
+            raise ValueError(f"duplicate snapshot path: {relative_path}")
+        seen.add(relative_path)
+        validated.append(relative_path)
+    return validated
+
+
 def snapshot_fingerprint(root: Path, files: Sequence[str]) -> str:
     digest = hashlib.sha256()
-    for relative_path in sorted(files):
+    for relative_path in sorted(validate_snapshot_files(root, files)):
         path = root / relative_path
         if not path.is_file():
             raise FileNotFoundError(f"snapshot file is missing: {relative_path}")
@@ -680,7 +704,7 @@ def command_install_plan(args: argparse.Namespace) -> int:
     files = manifest.get("files", [])
     try:
         fingerprint = snapshot_fingerprint(source, files)
-    except FileNotFoundError as error:
+    except (FileNotFoundError, ValueError) as error:
         print(str(error), file=sys.stderr)
         return 2
     target = Path(args.target).resolve() if args.target else INSTALL_TARGETS[args.platform]
@@ -718,7 +742,7 @@ def command_install_apply(args: argparse.Namespace) -> int:
     files = plan["files"]
     try:
         current_fingerprint = snapshot_fingerprint(source, files)
-    except FileNotFoundError as error:
+    except (FileNotFoundError, ValueError) as error:
         print(str(error), file=sys.stderr)
         return 2
     if current_fingerprint != plan["fingerprint"]:
@@ -772,7 +796,7 @@ def command_install_verify(args: argparse.Namespace) -> int:
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
     try:
         actual = snapshot_fingerprint(target, receipt["files"])
-    except FileNotFoundError as error:
+    except (FileNotFoundError, ValueError) as error:
         print(str(error), file=sys.stderr)
         return 2
     valid = actual == receipt["fingerprint"]
@@ -802,7 +826,7 @@ def command_install_uninstall(args: argparse.Namespace) -> int:
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
     try:
         actual = snapshot_fingerprint(target, receipt["files"])
-    except FileNotFoundError:
+    except (FileNotFoundError, ValueError):
         print("installed snapshot changed; refusing to delete", file=sys.stderr)
         return 3
     if actual != receipt["fingerprint"]:

@@ -1,10 +1,17 @@
 {
   "name": "carpe-diem",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "schema_version": 1,
+  "required_capabilities": [
+    "filesystem:read",
+    "filesystem:write",
+    "shell:execute",
+    "network:search"
+  ],
   "files": [
     "manifest.json",
     "SKILL.md",
+    "SKILL.en.md",
     "adapters/codex/INSTALL.md",
     "adapters/claude-code/INSTALL.md",
     "adapters/cursor/INSTALL.md",
@@ -19,6 +26,20 @@
     "templates/project-plan.md",
     "templates/project-handoff.md",
     "templates/progress-summary.md",
-    "scripts/carpe_diem.py"
+    "scripts/carpe_diem.py",
+    "install.sh",
+    "references/stage-transition-graph.md",
+    "references/wisdom/README.md",
+    "references/wisdom/researcher-t1-summary.md",
+    "references/wisdom/real-world-patterns/README.md",
+    "references/wisdom/real-world-patterns/agent-skills.md",
+    "references/wisdom/real-world-patterns/building-effective-agents.md",
+    "references/wisdom/real-world-patterns/claude-code-best-practices.md",
+    "references/wisdom/real-world-patterns/context-engineering.md",
+    "references/wisdom/project-archetypes/README.md",
+    "references/wisdom/project-archetypes/cli-tool.md",
+    "references/wisdom/project-archetypes/devtool.md",
+    "references/wisdom/project-archetypes/web-app.md",
+    "templates/adr-template.md"
   ]
 }

@@ -45,11 +45,17 @@ description: Help developers and creators who have a Coding Agent but no clear p
    - `validate` → `references/stages/validate.md`
    - `plan` 或 `handoff` → `references/stages/plan.md`
    - `track`、`paused` 或 `completed` → `references/stages/track.md`
-6. 识别当前阶段与用户方向，匹配实战模式卡片并自动加载：
-   - 先阅读 `references/wisdom/real-world-patterns/README.md`，了解可用卡片
-   - 根据当前阶段（步骤4确定）和用户方向，选择匹配的实战模式卡片
-   - 仅加载与当前阶段有对应指引的卡片（卡片 "对 Carpe Diem 用户的启发" 中包含当前阶段小节）
-   - 加载后，在对话中自然引用卡片中的关键洞察和反向提醒，避免生硬照搬
+6. 识别当前阶段与用户方向，自动加载匹配的智慧卡片：
+   a. **实战模式卡片**（`real-world-patterns/`）：
+      - 先阅读 `references/wisdom/real-world-patterns/README.md`，了解可用卡片
+      - 根据当前阶段（步骤4确定）和用户方向，选择匹配的实战模式卡片
+      - 仅加载与当前阶段有对应指引的卡片（卡片 "对 Carpe Diem 用户的启发" 中包含当前阶段小节）
+      - 加载后，在对话中自然引用卡片中的关键洞察和反向提醒，避免生硬照搬
+   b. **行为卡（Mentor 卡片）**（`mentors/`）：
+      - 先阅读 `references/wisdom/mentors/README.md`，了解可用卡片及其触发条件
+      - 根据当前阶段自动加载对应阶段的行为卡：Discover → `mom-test`、`scratch-your-itch`、`jtbd-work-statement`、`secret-test`、`dirty-work-test`；Validate → `test-card`、`handmade-first`、`behavior-signal`、`continuous-check`；Plan → `strategy-kernel`、`appetite-constraint`、`c4-architecture`、`bounded-context`、`adr-rfc-enhance`、`pitch-format`、`stability-patterns`、`test-first`、`document-as-deliverable`；Track → `certainty-level`、`wip-detection`、`constraint-diagnosis`、`four-metrics`、`milestone-state`、`heartbeat`、`integration-health`、`regular-departure`、`value-stream`；跨阶段通用卡（`beachhead`、`say-no-by-default`、`complexity-budget`、`handmade-validation`、`pmf-survey`、`user-behavior-metric`）按阶段匹配规则加载
+      - 同时根据用户对话中的触发条件（如"很多人说好"→`mom-test`、"不知道做什么"→`scratch-your-itch`、"先做出来再说"→`complexity-budget`），动态加载匹配的跨阶段或非当前阶段卡片
+      - 加载后，将行为指导自然融入当前阶段的引导，而非单独展示"卡片内容"
 7. 当前阶段完成后，先展示要保存的摘要或 Diff；用户确认后再写状态和 `next_recommended`。
 
 ### 阶段转换规则

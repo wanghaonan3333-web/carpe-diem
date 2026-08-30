@@ -8,6 +8,25 @@
 ```
 wisdom/
 ├── README.md                    # 本文件
+├── mentors/                     # 行为卡（Mentor 卡片）：按阶段触发的可操作行为指导
+│   ├── README.md                 # 卡片索引和阶段匹配规则
+│   ├── discover/
+│   │   ├── mom-test.md           # 识别用户反馈中的真实信号
+│   │   └── scratch-your-itch.md  # 从自身摩擦出发找项目
+│   ├── validate/
+│   │   ├── test-card.md          # 假设验证卡
+│   │   └── handmade-first.md     # 手工验证优先
+│   ├── plan/
+│   │   ├── strategy-kernel.md    # 战略内核
+│   │   ├── appetite-constraint.md# 时间预算约束
+│   │   └── c4-architecture.md    # 架构可视化
+│   ├── track/
+│   │   ├── certainty-level.md    # 确定性分级
+│   │   ├── wip-detection.md      # WIP 检测
+│   │   └── constraint-diagnosis.md# 约束诊断
+│   └── cross/
+│       ├── beachhead.md          # 先攻一个窄市场再扩张
+│       └── say-no-by-default.md  # 默认说"不"
 ├── real-world-patterns/         # 从真实案例中提取的实战模式
 │   ├── claude-code-best-practices.md
 │   ├── building-effective-agents.md
@@ -22,14 +41,25 @@ wisdom/
 
 ## 自动加载机制
 
-SKILL.md 的"每次调用"流程第5步会**自动**加载匹配的实战模式卡片：
+SKILL.md 的"每次调用"流程第6步会**自动**加载匹配的智慧卡片，分为两类：
 
+### 1. 实战模式卡片（real-world-patterns/）
+
+加载流程：
 1. 先阅读 `references/wisdom/real-world-patterns/README.md` 了解可用卡片
 2. 根据当前阶段（Discover / Validate / Plan / Track）和用户方向，选择匹配的卡片
 3. 仅加载与当前阶段有对应指引的卡片（卡片中"对 Carpe Diem 用户的启发"包含当前阶段小节）
 4. 加载后，在对话中自然引用卡片洞察，而非生硬照搬
 
-### 匹配规则
+### 2. 行为卡（mentors/）
+
+加载流程：
+1. 先阅读 `references/wisdom/mentors/README.md` 了解可用卡片及其触发条件
+2. 根据当前阶段自动加载对应阶段的行为卡
+3. 同时根据用户对话中的触发条件动态加载匹配的跨阶段卡片
+4. 加载后，将行为指导融入当前阶段的引导，而非单独展示"卡片内容"
+
+### 匹配规则（实战模式卡片）
 
 | 当前阶段 | 匹配方式 |
 |----------|----------|

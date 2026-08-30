@@ -1,0 +1,1 @@
+The current version shown is v0.1.1. The page does not mention "33 wisdom cards".

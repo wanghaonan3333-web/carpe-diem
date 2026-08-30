@@ -10,7 +10,7 @@ It does not ship its own model, and it is not a random idea generator. It uses t
 
 This is the first `v0.1` release. We are still testing the central hypothesis: can Carpe Diem genuinely help someone move from “I have an Agent” to “I have started a project worth pursuing”? We would love thoughtful, constructive, and candid feedback—what actually helped, what felt confusing, and where the guidance lost the thread. Every real-world story will help shape the next version.
 
-Current release: `v0.1.1`. This focused update hardens installer path validation, completes lifecycle recovery rules, scopes session authorization reuse, and improves bilingual discovery and responses.
+Current release: `v0.2.0`. This major update completes the wisdom distillation system — 33 behavior cards across all four stages (Discover, Validate, Plan, Track) plus cross-stage wisdom, covering 24 thought leaders and 16 engineering case studies. The SKILL.md auto-loading mechanism now dynamically matches and loads behavior cards based on the current stage and user trigger conditions.
 
 ## What it does
 

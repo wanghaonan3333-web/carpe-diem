@@ -57,7 +57,7 @@ class SkillStructureTests(unittest.TestCase):
     def test_manifest_identifies_versioned_skill_entrypoint(self):
         manifest = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["name"], "carpe-diem")
-        self.assertEqual(manifest["version"], "0.1.1")
+        self.assertEqual(manifest["version"], "0.3.0")
         self.assertEqual(manifest["schema_version"], 1)
         self.assertIn("SKILL.md", manifest["files"])
 

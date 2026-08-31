@@ -1,17 +1,19 @@
 # Carpe Diem 智慧蒸馏总结
 
 > 本文档汇总了 Carpe Diem 智慧蒸馏工作的完整全景——从研究到产出，从人物到卡片。
-> 最后更新：2026-09-02（第五阶段完成 — Phase 5-9 扩展，共 55 张行为卡）
+> 最后更新：2026-08-31（Phase 5-9 已产出 22 张候选卡；55 张运行文件通过结构校验，新增来源核验仍在推进）
+
+> 状态说明：卡片“已创建”不再等同于“已完成蒸馏验收”。本轮 22 张新增卡均已核到可公开复查的一手来源，并通过证据、边界和路由验收。
 
 ---
 
 ## 一、蒸馏哲学
 
-Carpe Diem 的智慧蒸馏遵循三条铁律：
+Carpe Diem 的智慧蒸馏采用“研究层可追溯、运行层不露来源”的双层规则：
 
 | 规则 | 含义 | 检查标准 |
 |------|------|---------|
-| **不露来源** | 所有卡片的语言是 Carpe Diem 自己的，不出现人名、书名、公司名 | 扫描全文：零来源名称 |
+| **运行时不露来源** | 卡片使用 Carpe Diem 自己的语言，不靠权威背书 | 运行卡不复述来源；研究登记册保留精确出处 |
 | **不抽象** | 不是"什么是 X"，而是"当你遇到 Y 时，怎么做 Z" | 每条都有触发条件 + 行为指导 |
 | **可操作** | 用户直接得到 actionable 的指导，不是"大师名言" | 指导步骤可在 3-5 轮对话内执行 |
 
@@ -93,7 +95,7 @@ Carpe Diem 的智慧蒸馏遵循三条铁律：
 | `docs/research/2026-08-30-cross-stage-wisdom-sources.md` | 跨阶段 4 位人物 + 4 个项目案例 | ~200+ |
 | **`docs/wisdom-distillation-plan.md`** | **综合规划蓝图（汇总文件）** | **549** |
 
-### 3.2 行为卡（55 张 — 全阶段完成）
+### 3.2 行为卡（55 张运行文件；Phase 5–9 来源核验 22/22）
 
 | 阶段 | 卡片 | 文件 | 行数 | 关键问题 |
 |------|------|------|------|---------|
@@ -142,23 +144,23 @@ Carpe Diem 的智慧蒸馏遵循三条铁律：
 | **Plan** | RFC / 设计文档 | `mentors/plan/rfc-design.md` | 93 | 如何用书面化决策替代口头决策，让团队对齐、让历史可查 |
 | **Track** | Code Review | `mentors/track/code-review.md` | 98 | 如何用小而专注的 PR、关注设计而非细节、针对代码而非作者，让 CR 成为知识传递工具 |
 | **Track** | 回顾 / 复盘 | `mentors/track/retrospective.md` | 93 | 如何用无指责基调、系统性原因分析、可执行的改进措施，把错误转化为改进机会 |
-| **Track** | 技术债管理 | `mentors/track/tech-debt.md` | 93 | 如何区分有意债务和糟糕代码，用 20% 还债时间和童子军规则控制技术债累积 |
+| **Track** | 技术债管理 | `mentors/track/tech-debt.md` | 93 | 如何区分有意债务和质量问题，按债务利息与改动频率安排治理顺序 |
 | **Cross** | 异步沟通 | `mentors/cross/async-communication.md` | 93 | 如何用文档替代会议、设定回复期望、区分同步和异步场景，让团队保持深度工作状态 |
-| **Cross** | 增长飞轮 | `mentors/cross/growth-flywheel.md` | 109 | 如何找到增长循环让每个用户带来更多用户，而非依赖外部流量或加功能 |
-| **Cross** | 用户留存 | `mentors/cross/user-retention.md` | 123 | 如何理解用户为什么留下和离开，通过激活、留存曲线和关键行为分析优化留存 |
-| **Cross** | 产品战略 | `mentors/cross/product-strategy.md` | 114 | 如何定义"我们是谁、为谁服务、解决什么问题"，用战略指导每个功能决策 |
-| **Cross** | 持续发现 | `mentors/cross/continuous-discovery.md` | 127 | 如何在产品生命周期中持续了解用户需求，让发现结果驱动路线图 |
-| **Plan** | API 设计哲学 | `mentors/plan/api-design.md` | 91 | 如何先设计 API 再实现，用一致性、直觉性、版本化和文档化构建调用者友好的接口 |
-| **Track** | 可观测性 | `mentors/track/observability.md` | — | 如何用日志/指标/追踪三支柱建立主动监控，在问题发生前发现异常 |
-| **Plan** | 数据建模 | `mentors/plan/data-modeling.md` | — | 如何从业务概念出发设计数据模型，用约束保障数据完整性 |
-| **Plan** | 安全设计 | `mentors/plan/security-design.md` | — | 如何在设计阶段融入安全考量，用最小权限、输入校验、安全库和响应计划构建安全体系 |
+| **Cross** | 增长飞轮 | `mentors/cross/growth-flywheel.md` | 109 | 在留存成立后验证可重复增长循环，而非依赖一次性外部流量 |
+| **Cross** | 用户留存 | `mentors/cross/user-retention.md` | 123 | 先定位用户价值、激活和退出原因，再决定是否扩大获客 |
+| **Cross** | 产品战略 | `mentors/cross/product-strategy.md` | 114 | 用聚焦、洞察和一致行动约束产品选择 |
+| **Cross** | 持续发现 | `mentors/cross/continuous-discovery.md` | 127 | 用与决策风险相称的持续接触更新用户证据 |
+| **Plan** | API 设计哲学 | `mentors/plan/api-design.md` | 91 | 先定义调用者契约和兼容边界，再选择变更与发布策略 |
+| **Track** | 可观测性 | `mentors/track/observability.md` | — | 从运行时问题反推遥测与关联上下文，让未知异常可调查 |
+| **Plan** | 数据建模 | `mentors/plan/data-modeling.md` | — | 从业务实体、不变量和演进路径设计数据约束 |
+| **Plan** | 安全设计 | `mentors/plan/security-design.md` | — | 在外部边界区分语法验证、领域语义和授权检查 |
 
 ### 3.3 索引与集成
 
 | 文件 | 内容 | 行数 |
 |------|------|------|
 | `references/wisdom/mentors/README.md` | 行为卡索引（55 张）、阶段匹配规则、触发条件匹配规则 | 234 |
-| `SKILL.md`（已更新） | 步骤 6 扩展为双类智慧卡片加载机制，涵盖全阶段 55 张行为卡 | — |
+| `SKILL.md`（已更新） | 步骤 6 使用具体触发路由；每轮最多 1 张主卡 + 1 张互补辅卡 | — |
 
 ---
 
@@ -193,7 +195,7 @@ Carpe Diem 的智慧蒸馏遵循三条铁律：
                                 product-strategy, continuous-discovery
   第九阶段（Phase 9 - 工程维度）: ✅ 4 张 — api-design, observability, data-modeling,
                                 security-design
-  总计: 55 张 — 全阶段完成 ✅
+  总计: 55 张运行文件 — 结构完成；Phase 5-9 来源验收继续进行
 ```
 
 ---
@@ -256,7 +258,8 @@ Carpe Diem 的智慧蒸馏遵循三条铁律：
 | 已创建的行为卡 | **55 张**（33 原卡 + 22 新卡） |
 | 已完成的行为卡行数 | **~5,700+ 行** |
 | 规划中的总卡片数 | **55 张**（Phase 1-4: 33 + Phase 5-9: 22） |
-| 总卡片完成率 | **100%**（55/55） |
+| 运行文件结构完成率 | **100%**（55/55，通过自动校验） |
+| Phase 5-9 一手来源核验 | **22/22** |
 
 ---
 

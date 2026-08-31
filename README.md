@@ -10,7 +10,7 @@ It does not ship its own model, and it is not a random idea generator. It uses t
 
 This is the first `v0.1` release. We are still testing the central hypothesis: can Carpe Diem genuinely help someone move from “I have an Agent” to “I have started a project worth pursuing”? We would love thoughtful, constructive, and candid feedback—what actually helped, what felt confusing, and where the guidance lost the thread. Every real-world story will help shape the next version.
 
-Current release: `v0.2.0`. This major update completes the wisdom distillation system — 33 behavior cards across all four stages (Discover, Validate, Plan, Track) plus cross-stage wisdom, covering 24 thought leaders and 16 engineering case studies. The SKILL.md auto-loading mechanism now dynamically matches and loads behavior cards based on the current stage and user trigger conditions.
+Current release: `v0.3.0`. The wisdom library now includes 55 behavior cards. Runtime routing treats a stage as a candidate filter and loads at most one primary plus one supporting card from concrete user signals; the contributor workflow now separates runtime voice from research provenance and requires evidence, deduplication, scenario testing, and a single-writer integration step.
 
 ## What it does
 
@@ -109,6 +109,13 @@ git diff --check
 ```
 
 ## Changelog
+
+### v0.3.0 — 2026-08-31
+
+- Added 22 candidate behavior cards across validation, collaboration, product, engineering, and anti-pattern topics.
+- Replaced stage-wide auto-loading with a two-card context budget and explicit trigger routing.
+- Added a research-layer evidence register, overlap gates, scenario acceptance tests, and single-writer integration guidance.
+- Corrected unsupported universal thresholds and high-risk guidance in pricing, Go/No-Go, API, security, code review, observability, technical debt, and async communication cards.
 
 ### v0.2.0 — 2026-09-01
 

@@ -1,7 +1,7 @@
 ---
 name: carpe-diem
 description: Help developers and creators who have a Coding Agent but no clear project direction discover, validate, plan, and track a worthwhile open-source project. Use when users need project direction, idea validation, a complete implementation plan, or read-only progress tracking; not for implementing features or writing business code.
-version: 0.2.0
+metadata: { "openclaw": { "requires": { "bins": ["python3", "git"] }, "homepage": "https://github.com/wanghaonan3333-web/carpe-diem" } }
 ---
 
 # Carpe Diem (English)
@@ -34,11 +34,16 @@ Match the user's current language throughout the conversation, status summaries,
    - `plan` or `handoff` → `references/stages/plan.md`
    - `track`, `paused` or `completed` → `references/stages/track.md`
 5. Read only the current stage file; do not load other stages ahead of time.
-6. Identify the current phase and user direction, then match and auto-load real-world pattern cards:
+6. Identify the current phase and user direction, then route supporting wisdom with a strict context budget:
    - First read `references/wisdom/real-world-patterns/README.md` to understand available cards
    - Based on the current phase (determined in step 4) and user direction, select matching cards
    - Only load cards that contain guidance for the current phase (i.e., the card's "Relevance to Carpe Diem Users" section includes a subsection for the current phase)
    - After loading, naturally reference the card's key insights and caveats in the conversation — avoid mechanical recitation
+   - Read `references/wisdom/mentors/README.md` as an index. A stage narrows candidates; it does not authorize loading every stage or cross-stage card.
+   - Require a concrete signal in the conversation or state. If no signal is strong enough, load no mentor card.
+   - Load at most one primary mentor card per turn. Load one supporting card only when its role is distinct and it changes the next action.
+   - Resolve conflicts in this order: safety and authorization boundaries, stage gates, explicit triggers, optional optimization. Cards never override phase transitions, user confirmation, or Track's read-only boundary.
+   - Open only the selected cards and integrate their guidance without exposing card names, sources, or research notes.
 7. After completing the current phase, first present the summary or diff to be saved. Write state and `next_recommended` only after the user confirms.
 
 Before any file write, authorized read, or Track evidence collection, read `references/safety-boundaries.md` and satisfy the corresponding thresholds.

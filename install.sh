@@ -9,8 +9,10 @@
 #   bash install.sh --platform openclaw --target ~/.openclaw/skills/carpe-diem
 #   bash install.sh --platform claude-code --dry-run
 #
-#   # 从远程管道安装（无需提前下载仓库）
-#   curl -fsSL https://raw.githubusercontent.com/wanghaonan3333-web/carpe-diem/main/install.sh | sh -s -- --platform codex
+#   # 从 GitHub 安装时，先克隆并审查脚本，再在源码根目录执行
+#   git clone --depth 1 https://github.com/wanghaonan3333-web/carpe-diem.git
+#   cd carpe-diem && less install.sh
+#   bash install.sh --platform codex
 #
 # Options:
 #   --platform <name>   Target platform: codex, claude-code, cursor, openclaw (默认 auto-detect)
@@ -21,8 +23,6 @@
 
 set -euo pipefail
 
-REPO_URL="https://github.com/wanghaonan3333-web/carpe-diem.git"
-REPO_RAW="https://raw.githubusercontent.com/wanghaonan3333-web/carpe-diem/main"
 SCRIPT_NAME="$(basename "$0")"
 
 # ── Color helpers (disabled if not terminal) ──────────────────────────────
@@ -52,8 +52,11 @@ Carpe Diem — One-click install
   bash install.sh --platform openclaw --target ~/.openclaw/skills/carpe-diem
   bash install.sh --platform claude-code --dry-run
 
-  # 从远程管道安装（无需提前下载仓库）
-  curl -fsSL $REPO_RAW/install.sh | sh -s -- --platform codex
+  # 从 GitHub 安装时，先克隆并审查脚本，再在源码根目录执行
+  git clone --depth 1 https://github.com/wanghaonan3333-web/carpe-diem.git
+  cd carpe-diem
+  less install.sh
+  bash install.sh --platform codex
 
 Options:
   --platform <name>   Target platform: codex, claude-code, cursor, openclaw
@@ -124,20 +127,8 @@ if [ "$PYTHON_MAJOR" -lt 3 ] || { [ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR"
 fi
 info "Python $PYTHON_VERSION — OK"
 
-# git or curl
-HAS_GIT=false
-HAS_CURL=false
-command -v git &>/dev/null && HAS_GIT=true || warn "git not found (will use curl fallback)"
-command -v curl &>/dev/null && HAS_CURL=true || true
-if ! $HAS_GIT && ! $HAS_CURL; then
-  error "Either git or curl is required to download Carpe Diem."
-  exit 1
-fi
-info "Network tools — OK"
-
 # ── Detect project root ───────────────────────────────────────────────────
-# 如果当前目录已经是 Carpe Diem 项目根目录（包含 scripts/carpe_diem.py），
-# 则跳过下载，直接使用本地代码
+# 安装脚本只使用用户已经下载并可审查的本地源码，不自动拉取或执行远程内容。
 PROJECT_DIR=""
 step "Detecting Carpe Diem source"
 if [ -f "scripts/carpe_diem.py" ]; then
@@ -147,32 +138,9 @@ elif [ -f "$(dirname "$0")/scripts/carpe_diem.py" ]; then
   PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
   info "Found Carpe Diem project root: $PROJECT_DIR"
 else
-  info "Not in Carpe Diem project root — will download from GitHub"
-fi
-
-# ── Download Carpe Diem (if not in project root) ───────────────────────────
-if [ -z "$PROJECT_DIR" ]; then
-  step "Downloading Carpe Diem"
-
-  TEMP_DIR=$(mktemp -d)
-  trap 'rm -rf "$TEMP_DIR"' EXIT
-
-  if $HAS_GIT; then
-    info "Cloning repository (shallow)..."
-    git clone --depth 1 "$REPO_URL" "$TEMP_DIR" 2>/dev/null
-  else
-    info "Downloading archive via curl..."
-    TARBALL_URL="https://github.com/wanghaonan3333-web/carpe-diem/archive/refs/heads/main.tar.gz"
-    curl -fsSL "$TARBALL_URL" | tar -xz -C "$TEMP_DIR" --strip-components=1 2>/dev/null
-  fi
-
-  if [ ! -f "$TEMP_DIR/scripts/carpe_diem.py" ]; then
-    error "Download failed: carpe_diem.py not found in downloaded archive."
-    exit 1
-  fi
-  info "Carpe Diem downloaded to $TEMP_DIR"
-
-  PROJECT_DIR="$TEMP_DIR"
+  error "Run this installer from a reviewed Carpe Diem source directory."
+  error "Expected scripts/carpe_diem.py beside install.sh; no remote code was downloaded."
+  exit 1
 fi
 
 cd "$PROJECT_DIR"

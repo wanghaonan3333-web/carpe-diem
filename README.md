@@ -8,9 +8,18 @@ An open-source Agent Skill for developers and creators, Carpe Diem is designed f
 
 It does not ship its own model, and it is not a random idea generator. It uses the reasoning and research capabilities of your current Agent, stores only the context you approve in local files, and helps turn uncertainty into a validated direction and a complete implementation plan. Once that plan is approved, Carpe Diem stops being a builder: future sessions only track progress through read-only evidence.
 
-This is the first `v0.1` release. We are still testing the central hypothesis: can Carpe Diem genuinely help someone move from “I have an Agent” to “I have started a project worth pursuing”? We would love thoughtful, constructive, and candid feedback—what actually helped, what felt confusing, and where the guidance lost the thread. Every real-world story will help shape the next version.
+Carpe Diem is an early public release, and real-world feedback is still valuable: tell us what helped, what felt confusing, and where the guidance lost the thread.
 
 Current release: `v0.3.0`. The wisdom library now includes 55 behavior cards. Runtime routing treats a stage as a candidate filter and loads at most one primary plus one supporting card from concrete user signals; the contributor workflow now separates runtime voice from research provenance and requires evidence, deduplication, scenario testing, and a single-writer integration step.
+
+## What's new in v0.3.0
+
+- Added 22 evidence-backed behavior cards across validation, collaboration, product, engineering, and anti-pattern topics.
+- Replaced stage-wide card loading with bounded one-primary/one-support routing driven by concrete user signals.
+- Added an evidence register, overlap checks, scenario acceptance cases, and single-writer integration guidance for future distillation.
+- Hardened local installation guidance and removed remote pipe-to-shell execution from the installer.
+
+See the full history in [CHANGELOG.md](CHANGELOG.md).
 
 ## What it does
 
@@ -95,7 +104,7 @@ Carpe Diem can research, challenge assumptions, plan, prepare a development hand
 
 ## Compatibility status
 
-All four hosts use the same Skill methodology and local state protocol. In `v0.1`, structure, deterministic helpers, and all four installation targets are covered by automated tests. User-level discovery and three isolated behavior scenarios have been verified with Codex CLI `0.150.0-alpha.8`.
+All four hosts use the same Skill methodology and local state protocol. In `v0.3.0`, the 55-card wisdom library, deterministic helpers, routing cases, and all four installation targets are covered by automated tests. User-level discovery and three isolated behavior scenarios have been verified with Codex CLI `0.150.0-alpha.8`.
 
 For Claude Code, Cursor, and OpenClaw, the documented Skill locations and installation snapshots are verified, but real host invocation still needs testing. The [internal testing record](docs/internal-testing.md) deliberately separates confirmed behavior from inferred compatibility.
 
@@ -117,7 +126,7 @@ git diff --check
 - Added a research-layer evidence register, overlap gates, scenario acceptance tests, and single-writer integration guidance.
 - Corrected unsupported universal thresholds and high-risk guidance in pricing, Go/No-Go, API, security, code review, observability, technical debt, and async communication cards.
 
-### v0.2.0 — 2026-09-01
+### v0.2.0 — 2026-08-30
 
 **Wisdom Distillation System — 33 behavior cards across all stages**
 
@@ -139,7 +148,7 @@ Hardens installer path validation, completes lifecycle recovery rules, scopes se
 
 ## Feedback and contributions
 
-Because this is the first release, feedback is especially valuable. Please open an issue with:
+Feedback is especially valuable. Please open an issue with:
 
 - the moment Carpe Diem genuinely helped you make progress;
 - a conversation where its guidance became generic, repetitive, or confusing;
